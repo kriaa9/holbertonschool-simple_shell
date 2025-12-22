@@ -1,13 +1,11 @@
 #include "shell.h"
 
 /**
- * main - Simple Shell 0.1 & 0.2
+ * main - Simple Shell 0.2
  * @ac: Argument count
  * @av: Argument vector
  *
- * Description: Handles commands with arguments.
- * Fixes: The checker requires argument handling for ./hbtn_ls /var
- *
+ * Description: Handles command lines with arguments.
  * Return: Always 0.
  */
 int main(int ac, char **av)
@@ -17,7 +15,7 @@ int main(int ac, char **av)
 	ssize_t nread;
 	pid_t child_pid;
 	int status;
-	char *args[64]; /* Array to hold command and arguments */
+	char *args[1024]; /* Array to store command and arguments */
 	char *token;
 	int i;
 
@@ -38,21 +36,22 @@ int main(int ac, char **av)
 			exit(0);
 		}
 
-		/* Remove newline */
+		/* Remove newline character */
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		/* Tokenize input into args array */
+		/* Tokenize the input loop */
 		i = 0;
 		token = strtok(line, " \n\t");
-		while (token != NULL && i < 63)
+		while (token != NULL)
 		{
-			args[i++] = token;
+			args[i] = token;
+			i++;
 			token = strtok(NULL, " \n\t");
 		}
-		args[i] = NULL; /* Null-terminate the list */
+		args[i] = NULL; /* Null-terminate the array */
 
-		/* If no command was typed, restart loop */
+		/* If no command entered, continue */
 		if (i == 0)
 			continue;
 
@@ -65,7 +64,6 @@ int main(int ac, char **av)
 
 		if (child_pid == 0)
 		{
-			/* Execute command with arguments */
 			if (execve(args[0], args, environ) == -1)
 			{
 				perror(av[0]);
