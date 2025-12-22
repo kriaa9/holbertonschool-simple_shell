@@ -16,12 +16,14 @@ int main(int ac, char **av)
 	int status;
 	char *args[1024];
 	char *token, *command_path;
-	int i;
+	int i, loop_count = 0; /* Loop counter for error messages */
 
 	(void)ac;
 
 	while (1)
 	{
+		loop_count++; /* Increment line number */
+
 		if (isatty(STDIN_FILENO))
 			printf("($) ");
 
@@ -48,13 +50,13 @@ int main(int ac, char **av)
 		if (i == 0)
 			continue;
 
-		/* TASK 4: Resolve Path before Forking */
 		command_path = get_location(args[0]);
 		
-		/* If command not found, print error and don't fork */
+		/* If command is not found, print EXACT error format */
 		if (command_path == NULL)
 		{
-			perror(av[0]); /* Prints: ./hsh: No such file or directory */
+			/* Format: ./hsh: 1: ls: not found */
+			fprintf(stderr, "%s: %d: %s: not found\n", av[0], loop_count, args[0]);
 			continue;
 		}
 
@@ -76,7 +78,6 @@ int main(int ac, char **av)
 		{
 			wait(&status);
 		}
-		/* Free the path if it was allocated by get_location */
 		free(command_path);
 	}
 	free(line);
