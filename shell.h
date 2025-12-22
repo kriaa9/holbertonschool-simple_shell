@@ -12,11 +12,10 @@
 #include <fcntl.h>
 #include <errno.h>
 
-/* Buffer sizes */
-#define READ_BUF_SIZE 1024
-#define WRITE_BUF_SIZE 1024
-#define BUF_FLUSH -1
+/* Global environment variable */
+extern char **environ;
 
-/* Prototypes will go here later */
+/* Prototypes */
+/* (We will add more here in later tasks) */
 
 #endif /* SHELL_H */
