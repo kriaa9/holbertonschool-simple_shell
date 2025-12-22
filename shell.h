@@ -12,10 +12,9 @@
 #include <fcntl.h>
 #include <errno.h>
 
-/* Global environment variable */
 extern char **environ;
 
-/* Prototypes */
-/* (We will add more here in later tasks) */
+/* Function Prototypes */
+char *get_location(char *command);
 
 #endif /* SHELL_H */

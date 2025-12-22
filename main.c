@@ -1,11 +1,10 @@
 #include "shell.h"
 
 /**
- * main - Simple Shell 0.2
+ * main - Simple Shell 0.3
  * @ac: Argument count
  * @av: Argument vector
  *
- * Description: Handles command lines with arguments.
  * Return: Always 0.
  */
 int main(int ac, char **av)
@@ -15,8 +14,8 @@ int main(int ac, char **av)
 	ssize_t nread;
 	pid_t child_pid;
 	int status;
-	char *args[1024]; /* Array to store command and arguments */
-	char *token;
+	char *args[1024];
+	char *token, *command_path;
 	int i;
 
 	(void)ac;
@@ -27,7 +26,6 @@ int main(int ac, char **av)
 			printf("($) ");
 
 		nread = getline(&line, &len, stdin);
-
 		if (nread == -1)
 		{
 			if (isatty(STDIN_FILENO))
@@ -35,25 +33,30 @@ int main(int ac, char **av)
 			free(line);
 			exit(0);
 		}
-
-		/* Remove newline character */
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		/* Tokenize the input loop */
 		i = 0;
 		token = strtok(line, " \n\t");
 		while (token != NULL)
 		{
-			args[i] = token;
-			i++;
+			args[i++] = token;
 			token = strtok(NULL, " \n\t");
 		}
-		args[i] = NULL; /* Null-terminate the array */
+		args[i] = NULL;
 
-		/* If no command entered, continue */
 		if (i == 0)
 			continue;
+
+		/* TASK 4: Resolve Path before Forking */
+		command_path = get_location(args[0]);
+		
+		/* If command not found, print error and don't fork */
+		if (command_path == NULL)
+		{
+			perror(av[0]); /* Prints: ./hsh: No such file or directory */
+			continue;
+		}
 
 		child_pid = fork();
 		if (child_pid == -1)
@@ -61,10 +64,9 @@ int main(int ac, char **av)
 			perror("Error");
 			continue;
 		}
-
 		if (child_pid == 0)
 		{
-			if (execve(args[0], args, environ) == -1)
+			if (execve(command_path, args, environ) == -1)
 			{
 				perror(av[0]);
 				exit(1);
@@ -74,6 +76,8 @@ int main(int ac, char **av)
 		{
 			wait(&status);
 		}
+		/* Free the path if it was allocated by get_location */
+		free(command_path);
 	}
 	free(line);
 	return (0);
