@@ -1,12 +1,12 @@
 #include "shell.h"
 
 /**
- * main - Simple Shell 0.1
+ * main - Simple Shell 0.1 & 0.2
  * @ac: Argument count
  * @av: Argument vector
  *
- * Description: Handles one-word commands and EOF.
- * Fixes: Uses strtok to handle leading/trailing spaces and empty lines.
+ * Description: Handles commands with arguments.
+ * Fixes: The checker requires argument handling for ./hbtn_ls /var
  *
  * Return: Always 0.
  */
@@ -17,8 +17,9 @@ int main(int ac, char **av)
 	ssize_t nread;
 	pid_t child_pid;
 	int status;
-	char *args[2]; /* args[0] = command, args[1] = NULL */
-	char *command;
+	char *args[64]; /* Array to hold command and arguments */
+	char *token;
+	int i;
 
 	(void)ac;
 
@@ -37,16 +38,22 @@ int main(int ac, char **av)
 			exit(0);
 		}
 
-		/* Remove the newline character */
+		/* Remove newline */
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		/* Tokenize the line to remove spaces and get the command */
-		/* The delimiters are space ( ), newline (\n), and tab (\t) */
-		command = strtok(line, " \n\t");
+		/* Tokenize input into args array */
+		i = 0;
+		token = strtok(line, " \n\t");
+		while (token != NULL && i < 63)
+		{
+			args[i++] = token;
+			token = strtok(NULL, " \n\t");
+		}
+		args[i] = NULL; /* Null-terminate the list */
 
-		/* If the line was just spaces or empty, command is NULL */
-		if (command == NULL)
+		/* If no command was typed, restart loop */
+		if (i == 0)
 			continue;
 
 		child_pid = fork();
@@ -58,9 +65,7 @@ int main(int ac, char **av)
 
 		if (child_pid == 0)
 		{
-			args[0] = command;
-			args[1] = NULL;
-
+			/* Execute command with arguments */
 			if (execve(args[0], args, environ) == -1)
 			{
 				perror(av[0]);
