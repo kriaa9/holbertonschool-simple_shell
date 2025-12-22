@@ -5,7 +5,7 @@
  * @ac: Argument count
  * @av: Argument vector
  *
- * Return: Always 0.
+ * Return: 0 on success, or specific error code
  */
 int main(int ac, char **av)
 {
@@ -13,17 +13,16 @@ int main(int ac, char **av)
 	size_t len = 0;
 	ssize_t nread;
 	pid_t child_pid;
-	int status;
+	int status, exit_status = 0;
 	char *args[1024];
 	char *token, *command_path;
-	int i, loop_count = 0; /* Loop counter for error messages */
+	int i, loop_count = 0;
 
 	(void)ac;
 
 	while (1)
 	{
-		loop_count++; /* Increment line number */
-
+		loop_count++;
 		if (isatty(STDIN_FILENO))
 			printf("($) ");
 
@@ -33,7 +32,8 @@ int main(int ac, char **av)
 			if (isatty(STDIN_FILENO))
 				printf("\n");
 			free(line);
-			exit(0);
+			/* Return the status of the last executed command */
+			return (exit_status);
 		}
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
@@ -52,11 +52,11 @@ int main(int ac, char **av)
 
 		command_path = get_location(args[0]);
 		
-		/* If command is not found, print EXACT error format */
+		/* CASE: Command not found */
 		if (command_path == NULL)
 		{
-			/* Format: ./hsh: 1: ls: not found */
 			fprintf(stderr, "%s: %d: %s: not found\n", av[0], loop_count, args[0]);
+			exit_status = 127; /* Standard error code for "not found" */
 			continue;
 		}
 
@@ -77,9 +77,12 @@ int main(int ac, char **av)
 		else
 		{
 			wait(&status);
+			/* Capture the exit status of the child */
+			if (WIFEXITED(status))
+				exit_status = WEXITSTATUS(status);
 		}
 		free(command_path);
 	}
 	free(line);
-	return (0);
+	return (exit_status);
 }
