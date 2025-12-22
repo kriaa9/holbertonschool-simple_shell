@@ -13,10 +13,16 @@ char *get_location(char *command)
 	struct stat buffer;
 	int i = 0;
 
-	/* 1. Check if command is already an absolute path */
-	/* (e.g. /bin/ls) */
-	if (stat(command, &buffer) == 0)
-		return (strdup(command));
+	/* * FIX: Only treat command as a path if it contains '/'
+	 * If the user types "ls", we must NOT check the current dir
+	 * unless PATH tells us to.
+	 */
+	if (strchr(command, '/') != NULL)
+	{
+		if (stat(command, &buffer) == 0)
+			return (strdup(command));
+		return (NULL);
+	}
 
 	/* 2. Find PATH variable safely */
 	if (!environ)
