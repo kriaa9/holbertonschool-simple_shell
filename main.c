@@ -5,9 +5,8 @@
  * @ac: Argument count
  * @av: Argument vector
  *
- * Description: A simple UNIX command interpreter.
- * Handles one-word commands and EOF (Ctrl+D).
- * Does not handle arguments or PATH yet.
+ * Description: Handles one-word commands and EOF.
+ * Fixes: Uses strtok to handle leading/trailing spaces and empty lines.
  *
  * Return: Always 0.
  */
@@ -19,19 +18,17 @@ int main(int ac, char **av)
 	pid_t child_pid;
 	int status;
 	char *args[2]; /* args[0] = command, args[1] = NULL */
+	char *command;
 
-	(void)ac; /* Unused for now */
+	(void)ac;
 
 	while (1)
 	{
-		/* 1. Display Prompt (only in interactive mode) */
 		if (isatty(STDIN_FILENO))
 			printf("($) ");
 
-		/* 2. Read Input */
 		nread = getline(&line, &len, stdin);
 
-		/* Handle EOF (Ctrl+D) or Error */
 		if (nread == -1)
 		{
 			if (isatty(STDIN_FILENO))
@@ -40,15 +37,18 @@ int main(int ac, char **av)
 			exit(0);
 		}
 
-		/* 3. Parse Input: Remove the newline character */
+		/* Remove the newline character */
 		if (line[nread - 1] == '\n')
 			line[nread - 1] = '\0';
 
-		/* Skip empty lines (user just pressed Enter) */
-		if (line[0] == '\0')
+		/* Tokenize the line to remove spaces and get the command */
+		/* The delimiters are space ( ), newline (\n), and tab (\t) */
+		command = strtok(line, " \n\t");
+
+		/* If the line was just spaces or empty, command is NULL */
+		if (command == NULL)
 			continue;
 
-		/* 4. Execution Phase */
 		child_pid = fork();
 		if (child_pid == -1)
 		{
@@ -58,24 +58,20 @@ int main(int ac, char **av)
 
 		if (child_pid == 0)
 		{
-			/* Child Process: Execute the command */
-			args[0] = line;
+			args[0] = command;
 			args[1] = NULL;
 
 			if (execve(args[0], args, environ) == -1)
 			{
-				/* Error handling if command not found */
 				perror(av[0]);
-				exit(1); /* Child must exit on failure */
+				exit(1);
 			}
 		}
 		else
 		{
-			/* Parent Process: Wait for child to finish */
 			wait(&status);
 		}
 	}
-	/* Cleanup (though the loop handles exit) */
 	free(line);
 	return (0);
 }
