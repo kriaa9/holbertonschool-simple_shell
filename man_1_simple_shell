@@ -1,0 +1,52 @@
+.TH SIMPLE_SHELL 1 "December 2025" "1.0" "Simple Shell Manual"
+.SH NAME
+simple_shell \- a simple UNIX command interpreter
+.SH SYNOPSIS
+.B ./hsh
+.SH DESCRIPTION
+.B simple_shell
+is a command interpreter (shell) that executes commands read from the standard input or from a file. It mimics the basic functionality of the standard \fBsh\fR shell.
+.PP
+When invoked, \fBsimple_shell\fR prints a prompt \fB($) \fR and waits for the user to type a command. A command line is terminated by a newline.
+.SH INVOCATION
+.B simple_shell
+can be invoked interactively or non-interactively.
+.SS Interactive Mode:
+.sp
+.B $ ./hsh
+.br
+.B ($) /bin/ls
+.br
+file1 file2
+.br
+.B ($)
+.SS Non-Interactive Mode:
+.sp
+.B $ echo "/bin/ls" | ./hsh
+.br
+file1 file2
+.SH COMMAND EXECUTION
+Upon receiving a command, \fBsimple_shell\fR tokenizes the input into words. The first word is considered the command name and the subsequent words are the arguments.
+.PP
+1. Checks if the command is a built-in.
+.br
+2. Checks if the command is an absolute path (e.g., \fB/bin/ls\fR).
+.br
+3. Searches for the command in the directories listed in the \fBPATH\fR environment variable.
+.SH BUILT-INS
+The following built-in commands are supported:
+.TP
+.B exit
+Exits the shell.
+.TP
+.B env
+Prints the current environment variables.
+.SH RETURN VALUE
+Returns 0 on success, or other values on failure.
+.SH AUTHORS
+Written by Kriaa9 and your_partner_name.
+.SH SEE ALSO
+.BR sh (1),
+.BR bash (1),
+.BR execve (2),
+.BR fork (2)
