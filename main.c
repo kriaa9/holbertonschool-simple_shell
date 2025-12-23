@@ -1,10 +1,11 @@
 #include "shell.h"
 
 /**
- * main - Simple Shell 0.3
+ * main - Simple Shell 0.4
  * @ac: Argument count
  * @av: Argument vector
  *
+ * Description: Handles the 'exit' built-in command.
  * Return: 0 on success, or specific error code
  */
 int main(int ac, char **av)
@@ -32,7 +33,6 @@ int main(int ac, char **av)
 			if (isatty(STDIN_FILENO))
 				printf("\n");
 			free(line);
-			/* Return the status of the last executed command */
 			return (exit_status);
 		}
 		if (line[nread - 1] == '\n')
@@ -50,13 +50,21 @@ int main(int ac, char **av)
 		if (i == 0)
 			continue;
 
+		/* TASK 5: Handle "exit" built-in */
+		if (strcmp(args[0], "exit") == 0)
+		{
+			free(line);
+			/* Exit with the status of the last executed command */
+			exit(exit_status);
+		}
+
+		/* External command handling */
 		command_path = get_location(args[0]);
 		
-		/* CASE: Command not found */
 		if (command_path == NULL)
 		{
 			fprintf(stderr, "%s: %d: %s: not found\n", av[0], loop_count, args[0]);
-			exit_status = 127; /* Standard error code for "not found" */
+			exit_status = 127;
 			continue;
 		}
 
@@ -77,7 +85,6 @@ int main(int ac, char **av)
 		else
 		{
 			wait(&status);
-			/* Capture the exit status of the child */
 			if (WIFEXITED(status))
 				exit_status = WEXITSTATUS(status);
 		}
