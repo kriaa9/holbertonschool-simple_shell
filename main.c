@@ -1,11 +1,11 @@
 #include "shell.h"
 
 /**
- * main - Simple Shell 0.4
+ * main - Simple Shell 1.0
  * @ac: Argument count
  * @av: Argument vector
  *
- * Description: Handles the 'exit' built-in command.
+ * Description: Handles 'exit' and 'env' built-ins.
  * Return: 0 on success, or specific error code
  */
 int main(int ac, char **av)
@@ -17,7 +17,7 @@ int main(int ac, char **av)
 	int status, exit_status = 0;
 	char *args[1024];
 	char *token, *command_path;
-	int i, loop_count = 0;
+	int i, k, loop_count = 0;
 
 	(void)ac;
 
@@ -54,8 +54,20 @@ int main(int ac, char **av)
 		if (strcmp(args[0], "exit") == 0)
 		{
 			free(line);
-			/* Exit with the status of the last executed command */
 			exit(exit_status);
+		}
+
+		/* TASK 6: Handle "env" built-in */
+		if (strcmp(args[0], "env") == 0)
+		{
+			k = 0;
+			while (environ[k])
+			{
+				printf("%s\n", environ[k]);
+				k++;
+			}
+			exit_status = 0;
+			continue; /* Skip fork, go to next prompt */
 		}
 
 		/* External command handling */
