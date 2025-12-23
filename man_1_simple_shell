@@ -1,52 +1,88 @@
-.TH SIMPLE_SHELL 1 "December 2025" "1.0" "Simple Shell Manual"
+.TH SIMPLE_SHELL 1 "December 2025" "Holberton School" "User Commands"
 .SH NAME
-simple_shell \- a simple UNIX command interpreter
+simple_shell \- a simple UNIX command language interpreter
 .SH SYNOPSIS
 .B ./hsh
 .SH DESCRIPTION
 .B simple_shell
-is a command interpreter (shell) that executes commands read from the standard input or from a file. It mimics the basic functionality of the standard \fBsh\fR shell.
-.PP
-When invoked, \fBsimple_shell\fR prints a prompt \fB($) \fR and waits for the user to type a command. A command line is terminated by a newline.
+is a command line interpreter that executes commands read from the standard input or from a file. It is a custom implementation of the UNIX shell, designed to mimic the basic functionality of the \fBsh\fR shell.
+
+The shell runs in an infinite loop, performing the following actions:
+.RS
+1. Displays a prompt (interactive mode only).
+.br
+2. Reads a line of input from the user.
+.br
+3. Parses the line into a command and arguments.
+.br
+4. Looks for the command in the current directory or the \fBPATH\fR.
+.br
+5. Creates a child process to execute the command.
+.br
+6. Waits for the command to finish and prints the prompt again.
+.RE
+
 .SH INVOCATION
 .B simple_shell
-can be invoked interactively or non-interactively.
-.SS Interactive Mode:
-.sp
-.B $ ./hsh
+can be invoked in two modes:
+
+.B Interactive Mode:
 .br
-.B ($) /bin/ls
+When invoked without arguments and connected to a terminal, the shell displays a prompt \fB($)\fR and waits for user input.
 .br
-file1 file2
+Example:
 .br
-.B ($)
-.SS Non-Interactive Mode:
-.sp
-.B $ echo "/bin/ls" | ./hsh
+$ ./hsh
 .br
-file1 file2
-.SH COMMAND EXECUTION
-Upon receiving a command, \fBsimple_shell\fR tokenizes the input into words. The first word is considered the command name and the subsequent words are the arguments.
-.PP
-1. Checks if the command is a built-in.
+($) ls -l
+
+.B Non-Interactive Mode:
 .br
-2. Checks if the command is an absolute path (e.g., \fB/bin/ls\fR).
+If standard input is piped into the shell, or if a stream is provided, no prompt is displayed.
 .br
-3. Searches for the command in the directories listed in the \fBPATH\fR environment variable.
-.SH BUILT-INS
-The following built-in commands are supported:
+Example:
+.br
+$ echo "ls" | ./hsh
+
+.SH BUILT-IN COMMANDS
+The shell supports the following built-in commands:
+
 .TP
 .B exit
-Exits the shell.
+Exits the shell. The status of the last executed command is returned.
+
 .TP
 .B env
-Prints the current environment variables.
-.SH RETURN VALUE
-Returns 0 on success, or other values on failure.
+Prints the current environment variables to standard output.
+
+.SH ENVIRONMENT
+.B simple_shell
+uses the \fBPATH\fR environment variable to locate commands that are not entered as absolute paths.
+
+.SH EXAMPLES
+.B Running a command using PATH:
+.br
+$ ./hsh
+.br
+($) ls
+.br
+hsh main.c shell.h
+.br
+($) exit
+
+.B Running a command using absolute path:
+.br
+$ ./hsh
+.br
+($) /bin/pwd
+.br
+/home/user/simple_shell
+
+.B Handling errors:
+.br
+($) foobar
+.br
+./hsh: 1: foobar: not found
+
 .SH AUTHORS
-Written by Kriaa9 and your_partner_name.
-.SH SEE ALSO
-.BR sh (1),
-.BR bash (1),
-.BR execve (2),
-.BR fork (2)
+Written by Abdallah.
