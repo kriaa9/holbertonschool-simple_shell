@@ -1,65 +1,24 @@
 # Simple Shell
 
-A simple UNIX command interpreter written in C.
+A simple UNIX command interpreter written in C. This program is a custom implementation of a shell that emulates the basic functionality of the `sh` shell.
 
-## Description
+## 📋 Table of Contents
+* [Description](#description)
+* [Installation](#installation)
+* [Usage](#usage)
+* [How It Works (Internal Flow)](#how-it-works-internal-flow)
+  
+## 📝 Description
+Simple Shell is a command-line interpreter that reads lines from either a file or standard input, parses them, and executes commands. It supports:
+* Interactive and Non-interactive mode.
+* Command execution from the System `PATH`.
+* Built-in commands (`exit`, `env`).
+* Error handling with correct exit status.
 
-This program is a custom implementation of a UNIX shell. It executes commands read from standard input or from a file. It is capable of executing simple commands, handling arguments, and managing the `PATH` environment variable.
-
-## Compilation
-
-All files are compiled on Ubuntu 20.04 LTS using `gcc`:
+## 🛠 Installation
+To install and compile the shell, clone the repository and compile using `gcc`:
 
 ```bash
+git clone [https://github.com/kriaa9/holbertonschool-simple_shell.git](https://github.com/kriaa9/holbertonschool-simple_shell.git)
+cd holbertonschool-simple_shell
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
-```
-
-## Usage
-
-### Interactive Mode
-```bash
-$ ./hsh
-($) /bin/ls
-hsh main.c shell.c
-($) exit
-$
-```
-
-### Non-Interactive Mode
-```bash
-$ echo "/bin/ls" | ./hsh
-hsh main.c shell.c
-```
-
-## Features
-
-- Execute simple commands with arguments
-- Handle the `PATH` environment variable
-- Support for both interactive and non-interactive modes
-- Process management using fork and execve
-- Simple command parsing and execution
-
-## Requirements
-
-- Ubuntu 20.04 LTS
-- gcc compiler
-- Standard C library (gnu89 standard)
-
-## Project Structure
-
-- `main.c` - Entry point of the shell
-- `shell.c` - Core shell functionality
-- `AUTHORS` - List of contributors
-- `README.md` - This file
-
-## Man Page
-
-For more information about the shell, see the man page: `man_1_simple_shell`
-
-## Authors
-
-See the `AUTHORS` file for the list of contributors.
-
-## License
-
-This project is part of the Holberton School curriculum.
