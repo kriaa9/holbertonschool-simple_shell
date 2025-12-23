@@ -67,3 +67,4 @@ char *get_location(char *command)
 	free(path_copy);
 	return (NULL);
 }
+
